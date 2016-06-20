@@ -110,13 +110,13 @@ Features
   MY_NAME="Phossa Project"
   ```
 
-- Support PHP global variables like `$_SERVER['HTTP_HOST']` in env file.
+- Support PHP global variables like `$_SERVER` etc. in env file.
 
   ```php
   HOST=${_SERVER.HTTP_HOST}
   ```
 
-- Support magic variables, like '__DIR__' and '__FILE__'.
+- Support magic variables, like `__DIR__` and `__FILE__`.
 
   Note: `${__FILE__}` consists only the file name (no path)
 
