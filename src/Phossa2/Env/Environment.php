@@ -125,7 +125,7 @@ class Environment extends ObjectAbstract implements EnvironmentInterface
             if ($success) {
                 $this->setEnv($key, $str);
 
-            // unresolved
+            // remember unresolved
             } else {
                 $this->unresolved[$key] = $str;
             }
@@ -204,7 +204,7 @@ class Environment extends ObjectAbstract implements EnvironmentInterface
      */
     protected function matchEnv(/*# string */ $name)
     {
-        // defined here
+        // defined
         if (isset($this->loaded[$name])) {
             return $this->loaded[$name];
 
@@ -255,7 +255,7 @@ class Environment extends ObjectAbstract implements EnvironmentInterface
     protected function matchGlobalVars(/*# string */ $name)
     {
         if (false !== strpos($name, '.')) {
-            list($n, $k) = @explode('.', $name, 2);
+            list($n, $k) = explode('.', $name, 2);
             if (isset($GLOBALS[$n]) && isset($GLOBALS[$n][$k])) {
                 return $GLOBALS[$n][$k];
             }
