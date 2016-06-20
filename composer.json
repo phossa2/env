@@ -1,0 +1,35 @@
+{
+    "name": "phossa2/env",
+    "type": "library",
+    "license": "MIT",
+    "homepage": "https://github.com/phossa2/env",
+    "description": "Library to load environments from a shell style file.",
+    "keywords": [ "phossa2", "phossa", "library", "environment" ],
+    "authors": [
+        {
+            "name": "Hong Zhang",
+            "homepage": "https://github.com/phossa2"
+        }
+    ],
+    "require": {
+        "php": ">=5.4.0",
+        "phossa2/shared": "^2.0.1"
+    },
+    "autoload": {
+        "psr-0": { "Phossa2\\Env\\": "src/" }
+    },
+    "config": {
+        "platform": {
+            "php": "5.4.0"
+        }
+    },
+    "minimum-stability": "dev",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "2.0-dev"
+        }
+    },
+    "archive": {
+        "exclude": [ "!vendor", "tests", "composer.lock" ]
+    }
+}
