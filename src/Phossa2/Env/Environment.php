@@ -32,14 +32,6 @@ use Phossa2\Env\Exception\NotFoundException;
 class Environment extends ObjectAbstract implements EnvironmentInterface
 {
     /**
-     * current load path
-     *
-     * @var    string
-     * @access protected
-     */
-    protected $path;
-
-    /**
      * the loaded key/value pairs
      *
      * @var    array
@@ -62,6 +54,11 @@ class Environment extends ObjectAbstract implements EnvironmentInterface
      * @access protected
      */
     protected $overload = false;
+
+    /*
+     * mark for including another file
+     */
+    const LOAD_FILE = '__LOAD_FILE__';
 
     /**
      * constructor
@@ -90,11 +87,8 @@ class Environment extends ObjectAbstract implements EnvironmentInterface
      */
     public function load(/*# string */ $path)
     {
-        // keep a record
-        $this->path = $path;
-
         // read data
-        $data = $this->loadFromPath($this->path);
+        $data = $this->loadFromPath($path);
 
         // check data
         $this->checkLoadedData($data);
@@ -212,11 +206,7 @@ class Environment extends ObjectAbstract implements EnvironmentInterface
         } elseif (false !== getenv($name)) {
             return getenv($name);
 
-        // __DIR__, __FILE__ etc.
-        } elseif (substr($name, 0, 2) === '__') {
-            return $this->matchMagicVars($name);
-
-        // _SERVER.HTTP_HOST etc.
+        // PHP globals, _SERVER.HTTP_HOST etc.
         } elseif ('_' === $name[0]) {
             return $this->matchGlobalVars($name);
 
@@ -227,21 +217,24 @@ class Environment extends ObjectAbstract implements EnvironmentInterface
     }
 
     /**
-     * Match with __DIR__, __FILE__ etc.
+     * Resolving any './file' or '../file'
      *
-     * @param  string $name
-     * @return false|string
+     * @param  string $file
+     * @param  string $path
+     * @return string
      * @access protected
      */
-    protected function matchMagicVars(/*# string */ $name)
-    {
-        switch($name) {
-            case '__DIR__' :
-                return dirname($this->path);
-            case '__FILE__' :
-                return basename($this->path);
-            default :
-                return false;
+    protected function resolvePath(
+        /*# string */ $file,
+        /*# string */ $path
+    )/*# : string */ {
+        $dir = dirname($path);
+        if ('./' === substr($file, 0, 2)) {
+            return $dir . substr($file, 1);
+        } elseif ('../' === substr($file, 0, 3)) {
+            return dirname($dir) . substr($file, 0, 2);
+        } else {
+            return $file;
         }
     }
 
@@ -275,8 +268,17 @@ class Environment extends ObjectAbstract implements EnvironmentInterface
     protected function loadFromPath(/*# string */ $path)/*# : array */
     {
         $str = file_get_contents($path);
+
         if (is_string($str)) {
-            return $this->parseString($str);
+            // parse string into array
+            $data = $this->parseString($str);
+
+            // expand any '${__DIR__}' or '${__FILE__}'
+            if (false !== strpos($str, '${__')) {
+                $this->expandMagic($data, $path);
+            }
+
+            return $data;
         } else {
             throw new LogicException(
                 Message::get(Message::ENV_READ_FAIL, $path),
@@ -296,17 +298,55 @@ class Environment extends ObjectAbstract implements EnvironmentInterface
     {
         $pairs = [];
         $regex =
-            '~^ \s*+ ([^#\s=]++) \s*+ = \s*+
+            '~^ (?:\s*+ ([^#\s=]++) \s*+ = \s*+
                 (?:([^"\'#\s][^#]*)|((["\'])((?:\\\4|.)*?)\4)|\s*)
-                (?:\s*\#.*)?
+                (?:\s*\#.*)?) |
+                (?:\s*+ (\.) \s++([^#]*))
             $~mx';
         if (preg_match_all($regex, $string, $matched, \PREG_SET_ORDER)) {
             foreach ($matched as $m) {
-                $pairs[$m[1]] = isset($m[5]) ? $m[5] : (isset($m[2]) ?
-                    trim($m[2]) : '');
+                // source another env file
+                if (isset($m[7])) {
+                    $file = trim($m[7]);
+                    $pairs[$file] = self::LOAD_FILE;
+
+                // quoted "val"
+                } elseif (isset($m[5])) {
+                    $pairs[$m[1]] = $m[5];
+
+                // normal case
+                } elseif (isset($m[2])) {
+                    $pairs[$m[1]] = trim($m[2]);
+
+                // no value defined
+                } else {
+                    $pairs[$m[1]] = '';
+                }
             }
         }
         return $pairs;
+    }
+
+    /**
+     * Expand ${__DIR__} & ${__FILE__} in key and value
+     *
+     * @param  array $data
+     * @param  string $path
+     * @access protected
+     */
+    protected function expandMagic(array &$data, $path)
+    {
+        $srch = ['${__DIR__}', '${__FILE__}'];
+        $repl = [ dirname($path), basename($path) ];
+        foreach ($data as $key => $val) {
+            $k2 = str_replace($srch, $repl, $key);
+            $v2 = str_replace($srch, $repl, $val);
+            if ($k2 !== $key) {
+                unset($data[$key]);
+                $key = $k2;
+            }
+            $data[$key] = $v2;
+        }
     }
 
     /**
