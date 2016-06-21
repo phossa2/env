@@ -109,7 +109,7 @@ class Environment extends ObjectAbstract implements EnvironmentInterface
      */
     protected function readContent(/*# string */ $path)/*# : string */
     {
-        $str = @file_get_contents($path);
+        $str = file_get_contents($path);
 
         if (is_string($str)) {
             return $str;
@@ -117,7 +117,7 @@ class Environment extends ObjectAbstract implements EnvironmentInterface
             throw new LogicException(
                 Message::get(Message::ENV_READ_FAIL, $path),
                 Message::ENV_READ_FAIL
-                );
+            );
         }
     }
 
@@ -144,25 +144,41 @@ class Environment extends ObjectAbstract implements EnvironmentInterface
                 (?: (\.|source) \s++ ([^#\r\n]*) )
             )
         $~mx';
+
         if (preg_match_all($regex, $string, $matched, \PREG_SET_ORDER)) {
-            foreach ($matched as $m) {
-                // source another env file
-                if (isset($m[7])) {
-                    $file = trim($m[7]);
-                    $pairs[$file] = self::LOAD_FILE;
+            return $this->clearPairs($matched);
+        } else {
+            return [];
+        }
+    }
 
-                    // quoted "val"
-                } elseif (isset($m[5])) {
-                    $pairs[$m[1]] = $m[5];
+    /**
+     * Clean up, return key/value pairs
+     *
+     * @param  array $matched
+     * @return array
+     * @access protected
+     */
+    protected function clearPairs(/*# array */ $matched)/*# : array */
+    {
+        $pairs = [];
+        foreach ($matched as $m) {
+            // source another env file
+            if (isset($m[7])) {
+                $file = trim($m[7]);
+                $pairs[$file] = self::LOAD_FILE;
 
-                    // normal case
-                } elseif (isset($m[2])) {
-                    $pairs[$m[1]] = trim($m[2]);
+                // quoted "val"
+            } elseif (isset($m[5])) {
+                $pairs[$m[1]] = $m[5];
 
-                    // no value defined
-                } else {
-                    $pairs[$m[1]] = '';
-                }
+                // normal case
+            } elseif (isset($m[2])) {
+                $pairs[$m[1]] = trim($m[2]);
+
+                // no value defined
+            } else {
+                $pairs[$m[1]] = '';
             }
         }
         return $pairs;
@@ -325,7 +341,7 @@ class Environment extends ObjectAbstract implements EnvironmentInterface
     /**
      * Get default value
      *
-     * @param  string $str
+     * @param  string &$name
      * @return string|null
      * @access protected
      */

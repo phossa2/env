@@ -26,5 +26,4 @@ use Phossa2\Env\Message\Message;
  */
 return [
     Message::ENV_READ_FAIL => '环境文件 "%s" 读取失败',
-    Message::ENV_REDEFINE => '环境变量 "%s" 重复定义了',
 ];

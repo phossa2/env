@@ -31,16 +31,10 @@ class Message extends BaseMessage
      */
     const ENV_READ_FAIL = 1606200902;
 
-    /*
-     * Can not redefine environment "%s"
-     */
-    const ENV_REDEFINE = 1606200903;
-
     /**
      * {@inheritDoc}
      */
     protected static $messages = [
         self::ENV_READ_FAIL => 'Read env file "%s" failed',
-        self::ENV_REDEFINE => 'Can not redefine environment "%s"',
     ];
 }
