@@ -19,8 +19,9 @@ namespace Phossa2\Env;
  *
  * @package Phossa2\Env
  * @author  Hong Zhang <phossa@126.com>
- * @version 2.0.0
+ * @version 2.0.1
  * @since   2.0.0 added
+ * @since   2.0.1 added overload()
  */
 interface EnvironmentInterface
 {
@@ -32,6 +33,21 @@ interface EnvironmentInterface
      * @throws LogicException if parse error
      * @throws NotFoundException if file not found
      * @access public
+     * @since  2.0.0 added
+     * @api
      */
     public function load(/*# string */ $path);
+
+    /**
+     * Load env from a file/path, overwrite existing envs
+     *
+     * @param  string $path
+     * @return $this
+     * @throws LogicException if parse error
+     * @throws NotFoundException if file not found
+     * @access public
+     * @since  2.0.1 added
+     * @api
+     */
+    public function overload(/*# string */ $path);
 }

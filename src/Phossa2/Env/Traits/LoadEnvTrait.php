@@ -1,0 +1,169 @@
+<?php
+/**
+ * Phossa Project
+ *
+ * PHP version 5.4
+ *
+ * @category  Library
+ * @package   Phossa2\Env
+ * @copyright Copyright (c) 2016 phossa.com
+ * @license   http://mit-license.org/ MIT License
+ * @link      http://www.phossa.com/
+ */
+/*# declare(strict_types=1); */
+
+namespace Phossa2\Env\Traits;
+
+use Phossa2\Env\Message\Message;
+use Phossa2\Env\Exception\LogicException;
+
+/**
+ * Collections of LOAD related methods
+ *
+ * @package Phossa2\Env
+ * @author  Hong Zhang <phossa@126.com>
+ * @version 2.0.1
+ * @since   2.0.1 added
+ */
+trait LoadEnvTrait
+{
+    /**
+     * marker for sourcing another env file
+     *
+     * @var    string
+     * @access private
+     */
+    private $source_marker = '__SOURCING_FILE__';
+
+    /**
+     * Load & parse, return the key/value pairs
+     *
+     * @param  string $path
+     * @return array
+     * @throws LogicException if $path not readable or failure
+     * @access protected
+     */
+    protected function loadEnv(/*# string */ $path)/*# : array */
+    {
+        // read data
+        $content = $this->readContent($path);
+
+        // parse it
+        $pairs = $this->parseString($content);
+
+        // expand any '${__DIR__}' or '${__FILE__}'
+        if (false !== strpos($content, '${__')) {
+            $this->expandMagic($pairs, $path);
+        }
+
+        return $pairs;
+    }
+
+    /**
+     * Read from a file, returns the content string
+     *
+     * @param  string $path
+     * @throws LogicException if $path not readable or failure
+     * @return string
+     * @access protected
+     */
+    protected function readContent(/*# string */ $path)/*# : string */
+    {
+        $str = file_get_contents($path);
+
+        if (is_string($str)) {
+            return $str;
+        } else {
+            throw new LogicException(
+                Message::get(Message::ENV_READ_FAIL, $path),
+                Message::ENV_READ_FAIL
+            );
+        }
+    }
+
+    /**
+     * Parse whole string into key/value pairs
+     *
+     * @param  string $string
+     * @return array
+     * @access protected
+     */
+    protected function parseString(/*# string */ $string)/*# : array */
+    {
+        $regex =
+        '~^\s*+
+            (?:
+                (?:([^#\s=]++) \s*+ = \s*+
+                    (?:
+                        ([^"\'#\s][^#\r\n]*) |
+                        ((["\'])((?:\\\4|.)*?)\4) |
+                        \s*
+                    )(?:\s*\#.*)?
+                ) |
+                (?: (\.|source) \s++ ([^#\r\n]*) )
+            )
+        $~mx';
+
+        if (preg_match_all($regex, $string, $matched, \PREG_SET_ORDER)) {
+            return $this->clearPairs($matched);
+        } else {
+            return [];
+        }
+    }
+
+    /**
+     * Clean up, return key/value pairs
+     *
+     * @param  array $matched
+     * @return array
+     * @access protected
+     */
+    protected function clearPairs(/*# array */ $matched)/*# : array */
+    {
+        $pairs = [];
+        foreach ($matched as $m) {
+            // source another env file
+            if (isset($m[7])) {
+                $file = trim($m[7]);
+                $pairs[$file] = $this->source_marker;
+
+                // quoted "val"
+            } elseif (isset($m[5])) {
+                $pairs[$m[1]] = $m[5];
+
+                // normal case
+            } elseif (isset($m[2])) {
+                $pairs[$m[1]] = trim($m[2]);
+
+                // no value defined
+            } else {
+                $pairs[$m[1]] = '';
+            }
+        }
+        return $pairs;
+    }
+
+    /**
+     * Expand ${__DIR__} & ${__FILE__} in key and value
+     *
+     * @param  array &$data
+     * @param  string $path
+     * @access protected
+     */
+    protected function expandMagic(array &$data, $path)
+    {
+        $srch = ['${__DIR__}', '${__FILE__}'];
+        $repl = [ dirname($path), basename($path) ];
+
+        // expand both key and value
+        foreach ($data as $key => $val) {
+            $k2 = str_replace($srch, $repl, $key);
+            $v2 = str_replace($srch, $repl, $val);
+            if ($k2 !== $key) {
+                unset($data[$key]);
+                $key = $k2;
+            }
+            $data[$key] = $v2;
+        }
+    }
+}
