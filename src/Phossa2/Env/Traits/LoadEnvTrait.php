@@ -94,14 +94,13 @@ trait LoadEnvTrait
         '~^\s*+
             (?:
                 (?:([^#\s=]++) \s*+ = \s*+
-                    (?:
-                        ([^"\'#\s][^#\r\n]*) |
-                        ((["\'])((?:\\\4|.)*?)\4) |
-                        \s*
-                    )(?:\s*\#.*)?
+                    (?|
+                        (([^"\'#\s][^#\n]*?)) |
+                        (["\'])((?:\\\2|.)*?)\2
+                    )?
                 ) |
-                (?: (\.|source) \s++ ([^#\r\n]*) )
-            )
+                (?: (\.|source) \s++ ([^#\n]*) )
+            )\s*?(?:[#].*)?
         $~mx';
 
         if (preg_match_all($regex, $string, $matched, \PREG_SET_ORDER)) {
@@ -123,17 +122,13 @@ trait LoadEnvTrait
         $pairs = [];
         foreach ($matched as $m) {
             // source another env file
-            if (isset($m[7])) {
-                $file = trim($m[7]);
+            if (isset($m[5])) {
+                $file = trim($m[5]);
                 $pairs[$file] = $this->source_marker;
 
-            // quoted "val"
-            } elseif (isset($m[5])) {
-                $pairs[$m[1]] = $m[5];
-
-            // normal case
-            } elseif (isset($m[2])) {
-                $pairs[$m[1]] = trim($m[2]);
+            // value found
+            } elseif (isset($m[3])) {
+                $pairs[$m[1]] = $m[3];
 
             // no value defined
             } else {
