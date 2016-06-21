@@ -148,7 +148,7 @@ trait LoadEnvTrait
     protected function expandMagic(array &$data, $path)
     {
         $srch = ['${__DIR__}', '${__FILE__}'];
-        $repl = [ dirname($path), basename($path) ];
+        $repl = [dirname($path), basename($path)];
 
         // expand both key and value
         foreach ($data as $key => $val) {
