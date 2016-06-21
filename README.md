@@ -87,26 +87,25 @@ Features
   MY_NAME="Phossa Project"
   ```
 
+- Get current *path*, *dir*, *filename* with `${0}`, `${0%/*}`, `${0##*/}`
+
+  ```php
+  # set current file
+  MY_FILE=${0##*/}
+
+  # set root dir to current dir
+  ROOT_DIR=${0%/*}
+  ```
+
+  or with `${__PATH__}`, `${__DIR__}`, `${__FILE__}`, which is not compatible
+  with shell script.
+
 - Support PHP global variables like `$_SERVER` etc. in env file.
 
   This is not compatible with shell script, thus *NOT* recommended.
 
   ```php
   HOST=${_SERVER.HTTP_HOST}
-  ```
-
-- Support magic variables, like `__DIR__` and `__FILE__`.
-
-  This is not compatible with shell script, thus *NOT* recommended.
-
-  Note: `${__FILE__}` consists only the file name (no path)
-
-  ```php
-  # set current file
-  MY_FILE=${__FILE__}
-
-  # set root dir to current dir
-  ROOT_DIR=${__DIR__}
   ```
 
 - Support PHP 5.4+, PHP 7.0+, HHVM
