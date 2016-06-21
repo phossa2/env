@@ -25,6 +25,34 @@ namespace Phossa2\Env\Traits;
 trait ParseEnvTrait
 {
     /**
+     * Parse & set env
+     *
+     * @param  array $envs env pairs
+     * @param  string $path current path
+     * @param  bool $overload overwrite existing env or not
+     * @return $this
+     * @access protected
+     */
+    protected function parseEnv(
+        array $envs,
+        /*# string */ $path,
+        /*# bool */ $overload = false
+    )/*# : array */ {
+        foreach ($envs as $key => $val) {
+            // source another env file
+            if ($this->source_marker === $val) {
+                $src = $this->resolvePath($this->resolveReference($key), $path);
+                $this->load($src, $overload);
+
+            // set env
+            } else {
+                $this->setEnv($key, $this->resolveReference($val), $overload);
+            }
+        }
+        return $this;
+    }
+
+    /**
      * Resolving any './path/to/file' or '../path/to/file'
      *
      * @param  string $file
@@ -36,6 +64,7 @@ trait ParseEnvTrait
         /*# string */ $file,
         /*# string */ $path
     )/*# : string */ {
+        // relative path found
         if (false !== strpos($file, './')) {
             // remember working dir
             $old = getcwd();
@@ -44,15 +73,13 @@ trait ParseEnvTrait
             chdir(dirname(realpath($path)));
 
             // expand file path
-            $real = realpath($file);
+            $file = realpath($file);
 
             // back to working dir
             chdir($old);
-
-            return $real;
-        } else {
-            return $file;
         }
+
+        return $file;
     }
 
     /**
@@ -64,7 +91,7 @@ trait ParseEnvTrait
      */
     protected function resolveReference(/*# string */ $str)/*# : string */
     {
-        $ref = [];
+        $ref = []; // placeholder
         while ($this->hasReference($str, $ref)) {
             $env = $this->matchEnv($ref[1]);
             $str = str_replace($ref[0], $env, $str);
@@ -112,11 +139,11 @@ trait ParseEnvTrait
         } elseif (null !== $default) {
             return $default;
 
-            // PHP globals, _SERVER.HTTP_HOST etc.
+        // PHP globals, _SERVER.HTTP_HOST etc.
         } elseif ('_' === $name[0]) {
             return $this->matchGlobalVars($name);
 
-            // not found
+        // not found
         } else {
             return '';
         }
@@ -137,7 +164,7 @@ trait ParseEnvTrait
         } elseif (false !== strpos($name, ':=')) {
             list($name, $default) = explode(':=', $name, 2);
             if (false === getenv($name)) {
-                $this->setEnv($name, $default);
+                $this->setEnv($name, $default, false);
             }
         }
         return $default;
@@ -166,14 +193,20 @@ trait ParseEnvTrait
      *
      * @param  string $key
      * @param  string $val
+     * @param  bool $overload
      * @access protected
      */
-    protected function setEnv(/*# string */ $key, /*# string */ $val)
-    {
-        // set env
-        putenv("$key=$val");
+    protected function setEnv(
+        /*# string */ $key,
+        /*# string */ $val,
+        /*# bool */ $overload
+    ) {
+        if ($overload || false === getenv($key)) {
+            // set env
+            putenv("$key=$val");
 
-        // also populate $_ENV
-        $_ENV[$key] = $val;
+            // also populate $_ENV
+            $_ENV[$key] = $val;
+        }
     }
 }

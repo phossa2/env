@@ -115,7 +115,7 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
         putenv('BIN_DIR=/bin');
 
         // load env, BIN_DIR will NOT be ignored
-        $this->environment->overload(__DIR__ . '/test.env');
+        $this->environment->load(__DIR__ . '/test.env', true);
 
         $this->assertEquals('/user/local/bin', getenv('BIN_DIR'));
 

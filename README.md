@@ -71,10 +71,10 @@ Features
   May overwrite by,
 
   ```php
-  env->setOverload(true);
+  env->load('./.env', $overload = true);
   ```
 
-- Relaxed syntax in env file
+- Relaxed syntax (but not recommended) in env file
 
   ```php
   # spaces before and after '=' is allowed. NOT recommended though
@@ -89,11 +89,15 @@ Features
 
 - Support PHP global variables like `$_SERVER` etc. in env file.
 
+  This is not compatible with shell script, thus *NOT* recommended.
+
   ```php
   HOST=${_SERVER.HTTP_HOST}
   ```
 
 - Support magic variables, like `__DIR__` and `__FILE__`.
+
+  This is not compatible with shell script, thus *NOT* recommended.
 
   Note: `${__FILE__}` consists only the file name (no path)
 
