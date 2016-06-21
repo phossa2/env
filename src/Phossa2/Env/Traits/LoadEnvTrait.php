@@ -151,7 +151,6 @@ trait LoadEnvTrait
      */
     protected function expandMagic(array &$data, $path)
     {
-        // full path: ${0},  dir ${${0%/*}, filename ${0##*/}
         $srch = [
             '${0}', '${0%/*}', '${0##*/}',
             '${__PATH__}', '${__DIR__}', '${__FILE__}'
