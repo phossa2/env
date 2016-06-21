@@ -33,13 +33,17 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
 
     public function clearEnv()
     {
-        putenv('BIN_DIR');
         putenv('ROOT_DIR');
+        putenv('BIN_DIR');
         putenv('ETC_DIR');
+        putenv('CONF_DIR');
         putenv('VAR_DIR');
         putenv('MY_VAR');
+        putenv('TMP_DIR');
         putenv('DOC_DIR');
+        putenv('MY_DOC');
         putenv('ENV_FILE');
+        putenv('SER_VAL');
     }
 
     /**
@@ -49,28 +53,33 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
      */
     public function testLoad1()
     {
-        // server variable
+        // set server variable
         $_SERVER['test'] = 'mytest';
 
         $this->environment->load(__DIR__ . '/test.env');
 
         // reference resolved
-        $this->assertEquals('/user/local/bin', getenv('BIN_DIR'));
         $this->assertEquals('/user/local', getenv('ROOT_DIR'));
+        $this->assertEquals('/user/local/bin', getenv('BIN_DIR'));
 
+        // assign default :=
         $this->assertEquals('/etc', getenv('ETC_DIR'));
+        $this->assertEquals('/etc', getenv('CONF_DIR'));
 
-        // empty value
-        $this->assertEquals('', getenv('VAR_DIR'));
+        // source another file
+        $this->assertEquals('/new/doc', getenv('MY_DOC'));
+
+        // :- set value
         $this->assertEquals('/var', getenv('MY_VAR'));
+        $this->assertEquals(false, getenv('VAR_DIR'));
 
-        // unresolved
-        $this->assertEquals(false, getenv('DOC_DIR'));
+        // empty
+        $this->assertEquals('', getenv('TMP_DIR'));
 
         // magic ${__FILE__}
         $this->assertEquals('test.env', getenv('ENV_FILE'));
 
-        // try $_SERVER[...]
+        // php globals $_SERVER[...]
         $this->assertEquals('mytest', getenv('SER_VAL'));
 
         // clear it
@@ -78,7 +87,7 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * Use existing env variables
+     * Not overload
      *
      * @covers Phossa2\Env\Environment::load()
      */
@@ -91,6 +100,8 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
         $this->environment->load(__DIR__ . '/test.env');
 
         $this->assertEquals('/bin', getenv('BIN_DIR'));
+
+        putenv('BIN_DIR');
     }
 
     /**
@@ -108,23 +119,7 @@ class EnvironmentTest extends \PHPUnit_Framework_TestCase
         $this->environment->load(__DIR__ . '/test.env');
 
         $this->assertEquals('/user/local/bin', getenv('BIN_DIR'));
-    }
 
-    /**
-     * Load multiple env files, resolve cross references
-     *
-     * @covers Phossa2\Env\Environment::load()
-     */
-    public function testLoad4()
-    {
-        // load multiple files
-        $this->environment->load(__DIR__ . '/test.env');
-        $this->environment->load(__DIR__ . '/test2.env');
-
-        // reference resolved across files
-        $this->assertEquals('/home/doc', getenv('DOC_DIR'));
-
-        // clear env
-        putenv('MY_DOC');
+        putenv('BIN_DIR');
     }
 }

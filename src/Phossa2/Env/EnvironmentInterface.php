@@ -15,7 +15,7 @@
 namespace Phossa2\Env;
 
 /**
- * EnvInterface
+ * EnvironmentInterface
  *
  * @package Phossa2\Env
  * @author  Hong Zhang <phossa@126.com>
@@ -25,12 +25,12 @@ namespace Phossa2\Env;
 interface EnvironmentInterface
 {
     /**
-     * Load env from a file/path (local file or other storage etc.)
+     * Load env from a file/path
      *
      * @param  string $path
      * @return $this
      * @throws LogicException if parse error
-     * @throws NotFoundException if $path not found
+     * @throws NotFoundException if file not found
      * @access public
      */
     public function load(/*# string */ $path);

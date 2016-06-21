@@ -35,17 +35,17 @@ or add the following lines to your `composer.json`
 Usage
 ---
 
-- Put your environments in file `.env`
+- Put your environments in file `.env`,
 
   ```shell
   # this is comment line
   BASE_DIR='/home/web'
 
   # reference here
-  APP_DIR=${BASE_DIR}/app   # also comment here
+  APP_DIR=${BASE_DIR}/app   # another comment here
   ```
 
-- Load and use your environments
+- Load and use your env variables in PHP script
 
   ```php
   <?php
@@ -62,32 +62,9 @@ Usage
 Features
 ---
 
-- Reference definition is **NOT** required before it is being used.
+- Support shell default value like `${param:-new}` or `${param:=new}`
 
-  ```php
-  # reference not defined yet
-  APP_DIR=${BASE_DIR}/app
-
-  # define here is ok
-  BASE_DIR='/home/web'
-  ```
-
-  References can **EVEN** span over multiple files.
-
-- Multiple env files supportted.
-
-  ```php
-  $env = new Phossa2\Env\Environment();
-
-  # load one env file
-  $env->load(__DIR__ . '/.env');
-
-  # load my own envs
-  $env->load(__DIR__ . '/myenv');
-  ```
-
-  Any unresolved references in one env file will be tried once a new file
-  loaded.
+- Able to `source another_env_file` in the env file
 
 - By default, will **NOT** overwrite any existing environment variables.
 
@@ -100,7 +77,7 @@ Features
 - Relaxed syntax in env file
 
   ```php
-  # Spaces before and after '=' is allowed.
+  # spaces before and after '=' is allowed. NOT recommended though
   ROOT_DIR = /var/tmp
 
   # end of line comment
