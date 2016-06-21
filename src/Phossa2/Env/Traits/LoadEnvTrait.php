@@ -127,15 +127,15 @@ trait LoadEnvTrait
                 $file = trim($m[7]);
                 $pairs[$file] = $this->source_marker;
 
-                // quoted "val"
+            // quoted "val"
             } elseif (isset($m[5])) {
                 $pairs[$m[1]] = $m[5];
 
-                // normal case
+            // normal case
             } elseif (isset($m[2])) {
                 $pairs[$m[1]] = trim($m[2]);
 
-                // no value defined
+            // no value defined
             } else {
                 $pairs[$m[1]] = '';
             }

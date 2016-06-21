@@ -24,44 +24,6 @@ namespace Phossa2\Env\Traits;
  */
 trait ParseEnvTrait
 {
-    use LoadEnvTrait;
-
-    /**
-     * Parse & set env
-     *
-     * @param  array $envs env pairs
-     * @param  string $path current path
-     * @param  bool $overload overwrite existing env or not
-     * @return $this
-     * @access protected
-     */
-    protected function parseEnv(
-        array $envs,
-        /*# string */ $path,
-        /*# bool */ $overload = false
-    )/*# : array */ {
-        foreach ($envs as $key => $val) {
-            // source another env file
-            if ($this->source_marker === $val) {
-                $file = $this->resolvePath(
-                    $this->resolveReference($key), // may have refs in it
-                    $path
-                );
-                $this->load($file);
-
-            // not overload
-            } elseif (!$overload && false !== getenv($key)) {
-                continue;
-
-            // set env
-            } else {
-                $this->setEnv($key, $this->resolveReference($val));
-            }
-        }
-
-        return $this;
-    }
-
     /**
      * Resolving any './path/to/file' or '../path/to/file'
      *
