@@ -31,7 +31,7 @@ use Phossa2\Shared\Base\ObjectAbstract;
  * @version 2.0.2
  * @since   2.0.0 added
  * @since   2.0.2 added support for ${0} etc.
- * @sincee  2.0.3 changed to ${BASH_SOURCE}
+ * @sincee  2.0.3 changed to ${BASH_SOURCE}, default overload is TRUE
  */
 class Environment extends ObjectAbstract implements EnvironmentInterface
 {
@@ -40,7 +40,7 @@ class Environment extends ObjectAbstract implements EnvironmentInterface
     /**
      * {@inheritDoc}
      */
-    public function load(/*# string */ $path, /*# bool */ $overload = false)
+    public function load(/*# string */ $path, /*# bool */ $overload = true)
     {
         $pairs = $this->loadEnv($path);
         return $this->parseEnv($pairs, $path, (bool) $overload);
@@ -58,7 +58,7 @@ class Environment extends ObjectAbstract implements EnvironmentInterface
     protected function parseEnv(
         array $envs,
         /*# string */ $path,
-        /*# bool */ $overload = false
+        /*# bool */ $overload
     )/*# : array */ {
         foreach ($envs as $key => $val) {
             // source another env file

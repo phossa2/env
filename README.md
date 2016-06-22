@@ -5,7 +5,8 @@
 [![Latest Stable Version](https://img.shields.io/packagist/vpre/phossa2/env.svg?style=flat)](https://packagist.org/packages/phossa2/env)
 [![License](https://poser.pugx.org/phossa2/env/license)](http://mit-license.org/)
 
-**phossa2/env** is a library to load environments from shell style files.
+**phossa2/env** is a library to load environment variables from fully bash shell
+compatible files.
 
 It requires PHP 5.4, supports PHP 7.0+ and HHVM. It is compliant with
 [PSR-1][PSR-1], [PSR-2][PSR-2], [PSR-4][PSR-4].
@@ -62,33 +63,32 @@ Usage
 Features
 ---
 
-- Support shell default value like `${param:-new}` or `${param:=new}`
+- Compatible with bash if not using extended features like
+  [relaxed syntax](#relax), [get current dir and file](#current) or
+  [PHP globals](#php).
+
+- Support shell default values, `${param:-new}` or `${param:=new}`
 
 - Able to `source another_env_file` in the env file
 
-- By default, will **NOT** overwrite any existing environment variables.
+- By default, **WILL** overwrite any existing environment variables. This is
+  the default behavior in bash.
 
-  May overwrite by,
+  To disable overwrite and honor existing env variables,
 
   ```php
-  env->load('./.env', $overload = true);
+  env->load('./.env', $overload = false);
   ```
 
-- Relaxed syntax (but not recommended) in env file
+- <a name="relax"></a>Relaxed syntax (not compatible with bash) in env file
 
   ```php
   # spaces before and after '=' is allowed. NOT recommended though
   ROOT_DIR = /var/tmp
-
-  # end of line comment
-  APP_DIR=${ROOT_DIR}/app  # comment here
-
-  # use quotes to quote spaces
-  MY_NAME="Phossa Project"
   ```
 
-- Get current *path*, *dir*, *filename* with `${BASH_SOURCE}`,
-  `${BASH_SOURCE%/*}`, `${BASH_SOURCE##*/}`
+- <a name="current"></a>Get current *path*, *dir*, *filename* with
+  `${BASH_SOURCE}`, `${BASH_SOURCE%/*}`, `${BASH_SOURCE##*/}`
 
   ```php
   # set current file
@@ -99,9 +99,9 @@ Features
   ```
 
   or with `${__PATH__}`, `${__DIR__}`, `${__FILE__}`, which is not compatible
-  with shell script.
+  with bash script.
 
-- Support PHP global variables like `$_SERVER` etc. in env file.
+- <a name="php"></a>Support PHP global variables like `$_SERVER` etc.
 
   This is not compatible with shell script, thus *NOT* recommended.
 
