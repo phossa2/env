@@ -25,6 +25,7 @@ use Phossa2\Env\Exception\LogicException;
  * @version 2.0.2
  * @since   2.0.1 added
  * @since   2.0.2 added support for ${0} etc.
+ * @since   2.0.3 changed ${0} to ${BASH_SOURCE}
  */
 trait LoadEnvTrait
 {
@@ -53,7 +54,7 @@ trait LoadEnvTrait
         $pairs = $this->parseString($content);
 
         // expand any '${__DIR__}' or '${__FILE__}'
-        if (false !== strpos($content, '${0') ||
+        if (false !== strpos($content, '${BASH_SOURCE') ||
             false !== strpos($content, '${__')
         ) {
             $this->expandMagic($pairs, $path);
@@ -148,11 +149,12 @@ trait LoadEnvTrait
      * @param  string $path
      * @access protected
      * @since  2.0.2 added support for ${0} etc.
+     * @since  2.0.3 changed to ${BASH_SOURCE}
      */
     protected function expandMagic(array &$data, $path)
     {
         $srch = [
-            '${0}', '${0%/*}', '${0##*/}',
+            '${BASH_SOURCE}', '${BASH_SOURCE%/*}', '${BASH_SOURCE##*/}',
             '${__PATH__}', '${__DIR__}', '${__FILE__}'
         ];
         $repl = [

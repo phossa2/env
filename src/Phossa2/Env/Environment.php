@@ -24,13 +24,14 @@ use Phossa2\Shared\Base\ObjectAbstract;
  * - support shell behavior
  * - support ${param:-word} and ${param:=word}
  * - extra support for PHP superglobals like '${_SERVER.HTTP_HOST}'
- * - added support for ${0} etc.
+ * - added support for ${BASH_SOURCE} etc.
  *
  * @package Phossa2\Env
  * @author  Hong Zhang <phossa@126.com>
  * @version 2.0.2
  * @since   2.0.0 added
  * @since   2.0.2 added support for ${0} etc.
+ * @sincee  2.0.3 changed to ${BASH_SOURCE}
  */
 class Environment extends ObjectAbstract implements EnvironmentInterface
 {

@@ -87,14 +87,15 @@ Features
   MY_NAME="Phossa Project"
   ```
 
-- Get current *path*, *dir*, *filename* with `${0}`, `${0%/*}`, `${0##*/}`
+- Get current *path*, *dir*, *filename* with `${BASH_SOURCE}`,
+  `${BASH_SOURCE%/*}`, `${BASH_SOURCE##*/}`
 
   ```php
   # set current file
-  MY_FILE=${0##*/}
+  MY_FILE=${BASH_SOURCE##*/}
 
   # set root dir to current dir
-  ROOT_DIR=${0%/*}
+  ROOT_DIR=${BASH_SOURCE%/*}
   ```
 
   or with `${__PATH__}`, `${__DIR__}`, `${__FILE__}`, which is not compatible
