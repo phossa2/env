@@ -32,6 +32,7 @@ use Phossa2\Shared\Base\ObjectAbstract;
  * @since   2.0.0 added
  * @since   2.0.2 added support for ${0} etc.
  * @sincee  2.0.3 changed to ${BASH_SOURCE}, default overload is TRUE
+ * @since   2.0.4 using ReferenceTrait
  */
 class Environment extends ObjectAbstract implements EnvironmentInterface
 {
@@ -63,12 +64,12 @@ class Environment extends ObjectAbstract implements EnvironmentInterface
         foreach ($envs as $key => $val) {
             // source another env file
             if ($this->source_marker === $val) {
-                $src = $this->resolvePath($this->resolveReference($key), $path);
+                $src = $this->expandPath($this->deReference($key), $path);
                 $this->load($src, $overload);
 
             // set env
             } else {
-                $this->setEnv($key, $this->resolveReference($val), $overload);
+                $this->setEnv($key, $this->deReference($val), $overload);
             }
         }
         return $this;

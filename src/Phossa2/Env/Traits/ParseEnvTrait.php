@@ -14,25 +14,30 @@
 
 namespace Phossa2\Env\Traits;
 
+use Phossa2\Shared\Reference\ReferenceTrait;
+
 /**
  * Collections of PARSE related methods
  *
  * @package Phossa2\Env
  * @author  Hong Zhang <phossa@126.com>
- * @version 2.0.1
+ * @version 2.0.4
  * @since   2.0.1 added
+ * @since   2.0.4 using ReferenceTrait
  */
 trait ParseEnvTrait
 {
+    use ReferenceTrait;
+
     /**
-     * Resolving any './path/to/file' or '../path/to/file'
+     * Resolving sourced file './path/to/file' or '../path/to/file'
      *
      * @param  string $file
      * @param  string $path
      * @return string
      * @access protected
      */
-    protected function resolvePath(
+    protected function expandPath(
         /*# string */ $file,
         /*# string */ $path
     )/*# : string */ {
@@ -55,51 +60,14 @@ trait ParseEnvTrait
     }
 
     /**
-     * Recursively resolve reference in the string $str
-     *
-     * @param  string $str
-     * @return string
-     * @access protected
-     */
-    protected function resolveReference(/*# string */ $str)/*# : string */
-    {
-        $ref = []; // placeholder
-        while ($this->hasReference($str, $ref)) {
-            $env = $this->matchEnv($ref[1]);
-            $str = str_replace($ref[0], $env, $str);
-        }
-        return $str;
-    }
-
-    /**
-     * Has reference in the string ?
-     *
-     * @param  string $string
-     * @param  array &$matches
-     * @return bool
-     * @access protected
-     */
-    protected function hasReference(
-        /*# string */ $string, array &$matches
-    )/*# : bool */ {
-        if (false !== strpos($string, '${') &&
-            preg_match('/\$\{([^\}]+)\}/', $string, $matches)) {
-            return true;
-        }
-        return false;
-    }
-
-    /**
      * Find the env value base on the name
      *
      * - support super globals like '${_SERVER.HTTP_HOST}' etc.
      * - use getenv()
      *
-     * @param  string $name
-     * @return string
-     * @access protected
+     * {@inheritDoc}
      */
-    protected function matchEnv(/*# string */ $name)
+    protected function getReference(/*# string */ $name)
     {
         // default value
         $default = $this->defaultValue($name);
@@ -117,8 +85,16 @@ trait ParseEnvTrait
 
         // not found
         } else {
-            return '';
+            return null;
         }
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    protected function resolveUnknown(/*# string */ $name)
+    {
+        return '';
     }
 
     /**
