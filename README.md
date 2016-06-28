@@ -1,6 +1,7 @@
 # phossa2/env
 [![Build Status](https://travis-ci.org/phossa2/env.svg?branch=master)](https://travis-ci.org/phossa2/env)
 [![Code Quality](https://scrutinizer-ci.com/g/phossa2/env/badges/quality-score.png?b=master)](https://travis-ci.org/phossa2/env)
+[![PHP 7 ready](http://php7ready.timesplinter.ch/phossa2/env/master/badge.svg)](https://travis-ci.org/phossa2/env)
 [![HHVM](https://img.shields.io/hhvm/phossa2/env.svg?style=flat)](http://hhvm.h4cc.de/package/phossa2/env)
 [![Latest Stable Version](https://img.shields.io/packagist/vpre/phossa2/env.svg?style=flat)](https://packagist.org/packages/phossa2/env)
 [![License](https://poser.pugx.org/phossa2/env/license)](http://mit-license.org/)
