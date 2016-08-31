@@ -75,7 +75,6 @@ trait ParseEnvTrait
         // found in environment
         if (false !== getenv($name)) {
             return getenv($name);
-
         } elseif (null !== $default) {
             return $default;
 
