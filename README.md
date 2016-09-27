@@ -1,10 +1,11 @@
 # phossa2/env
 [![Build Status](https://travis-ci.org/phossa2/env.svg?branch=master)](https://travis-ci.org/phossa2/env)
 [![Code Quality](https://scrutinizer-ci.com/g/phossa2/env/badges/quality-score.png?b=master)](https://travis-ci.org/phossa2/env)
+[![Code Climate](https://codeclimate.com/github/phossa2/env/badges/gpa.svg)](https://codeclimate.com/github/phossa2/env)
 [![PHP 7 ready](http://php7ready.timesplinter.ch/phossa2/env/master/badge.svg)](https://travis-ci.org/phossa2/env)
 [![HHVM](https://img.shields.io/hhvm/phossa2/env.svg?style=flat)](http://hhvm.h4cc.de/package/phossa2/env)
 [![Latest Stable Version](https://img.shields.io/packagist/vpre/phossa2/env.svg?style=flat)](https://packagist.org/packages/phossa2/env)
-[![License](https://poser.pugx.org/phossa2/env/license)](http://mit-license.org/)
+[![License](https://img.shields.io/:license-mit-blue.svg)](http://mit-license.org/)
 
 **phossa2/env** is a library to load environment variables from fully bash shell
 compatible files.
@@ -29,7 +30,7 @@ or add the following lines to your `composer.json`
 ```json
 {
     "require": {
-       "phossa2/env": "^2.0.0"
+       "phossa2/env": "2.*"
     }
 }
 ```
@@ -121,7 +122,7 @@ Dependencies
 
 - PHP >= 5.4.0
 
-- phossa2/shared >= 2.0.1
+- phossa2/shared >= 2.0.21
 
 License
 ---
