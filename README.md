@@ -117,6 +117,23 @@ Features
 
 - PSR-1, PSR-2, PSR-4 compliant.
 
+Change log
+---
+
+Please see [CHANGELOG](CHANGELOG.md) from more information.
+
+Testing
+---
+
+```bash
+$ composer test
+```
+
+Contributing
+---
+
+Please see [CONTRIBUTE](CONTRIBUTE.md) for more information.
+
 Dependencies
 ---
 
