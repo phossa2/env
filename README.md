@@ -1,4 +1,7 @@
-# phossa2/env
+# phossa2/env [ABANDONED]
+
+**PLEASE USE [phoole/env](https://github.com/phoole/env) library instead**
+
 [![Build Status](https://travis-ci.org/phossa2/env.svg?branch=master)](https://travis-ci.org/phossa2/env)
 [![Code Quality](https://scrutinizer-ci.com/g/phossa2/env/badges/quality-score.png?b=master)](https://travis-ci.org/phossa2/env)
 [![Code Climate](https://codeclimate.com/github/phossa2/env/badges/gpa.svg)](https://codeclimate.com/github/phossa2/env)
